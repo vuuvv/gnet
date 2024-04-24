@@ -20,7 +20,7 @@ import (
 	"runtime"
 	"sync/atomic"
 
-	errorx "github.com/panjf2000/gnet/v2/pkg/errors"
+	errorx "github.com/vuuvv/gnet/v2/pkg/errors"
 )
 
 func (eng *engine) listenStream(ln net.Listener) (err error) {

@@ -23,9 +23,9 @@ import (
 
 	"golang.org/x/sys/windows"
 
-	"github.com/panjf2000/gnet/v2/pkg/buffer/elastic"
-	errorx "github.com/panjf2000/gnet/v2/pkg/errors"
-	bbPool "github.com/panjf2000/gnet/v2/pkg/pool/bytebuffer"
+	"github.com/vuuvv/gnet/v2/pkg/buffer/elastic"
+	errorx "github.com/vuuvv/gnet/v2/pkg/errors"
+	bbPool "github.com/vuuvv/gnet/v2/pkg/pool/bytebuffer"
 )
 
 type netErr struct {

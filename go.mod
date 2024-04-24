@@ -1,4 +1,4 @@
-module github.com/panjf2000/gnet/v2
+module github.com/vuuvv/gnet/v2
 
 require (
 	github.com/panjf2000/ants/v2 v2.9.0

@@ -24,7 +24,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/panjf2000/gnet/v2/pkg/buffer/ring"
+	"github.com/vuuvv/gnet/v2/pkg/buffer/ring"
 )
 
 const (

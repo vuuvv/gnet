@@ -15,13 +15,10 @@
 package gnet
 
 import (
-	"errors"
 	"io"
 	"net"
 	"syscall"
 	"time"
-
-	"golang.org/x/sys/windows"
 
 	"github.com/vuuvv/gnet/v2/pkg/buffer/elastic"
 	errorx "github.com/vuuvv/gnet/v2/pkg/errors"
@@ -321,49 +318,50 @@ func (c *conn) Fd() (fd int) {
 }
 
 func (c *conn) Dup() (fd int, err error) {
-	if c.rawConn == nil && c.pc == nil {
-		return -1, net.ErrClosed
-	}
-
-	var (
-		sc syscall.Conn
-		ok bool
-	)
-	if c.rawConn != nil {
-		sc, ok = c.rawConn.(syscall.Conn)
-	} else {
-		sc, ok = c.pc.(syscall.Conn)
-	}
-
-	if !ok {
-		return -1, errors.New("failed to convert net.Conn to syscall.Conn")
-	}
-	rc, err := sc.SyscallConn()
-	if err != nil {
-		return -1, errors.New("failed to get syscall.RawConn from net.Conn")
-	}
-
-	var dupHandle windows.Handle
-	e := rc.Control(func(fd uintptr) {
-		process := windows.CurrentProcess()
-		err = windows.DuplicateHandle(
-			process,
-			windows.Handle(fd),
-			process,
-			&dupHandle,
-			0,
-			true,
-			windows.DUPLICATE_SAME_ACCESS,
-		)
-	})
-	if err != nil {
-		return -1, err
-	}
-	if e != nil {
-		return -1, e
-	}
-
-	return int(dupHandle), nil
+	//if c.rawConn == nil && c.pc == nil {
+	//	return -1, net.ErrClosed
+	//}
+	//
+	//var (
+	//	sc syscall.Conn
+	//	ok bool
+	//)
+	//if c.rawConn != nil {
+	//	sc, ok = c.rawConn.(syscall.Conn)
+	//} else {
+	//	sc, ok = c.pc.(syscall.Conn)
+	//}
+	//
+	//if !ok {
+	//	return -1, errors.New("failed to convert net.Conn to syscall.Conn")
+	//}
+	//rc, err := sc.SyscallConn()
+	//if err != nil {
+	//	return -1, errors.New("failed to get syscall.RawConn from net.Conn")
+	//}
+	//
+	//var dupHandle windows.Handle
+	//e := rc.Control(func(fd uintptr) {
+	//	process := windows.CurrentProcess()
+	//	err = windows.DuplicateHandle(
+	//		process,
+	//		windows.Handle(fd),
+	//		process,
+	//		&dupHandle,
+	//		0,
+	//		true,
+	//		windows.DUPLICATE_SAME_ACCESS,
+	//	)
+	//})
+	//if err != nil {
+	//	return -1, err
+	//}
+	//if e != nil {
+	//	return -1, e
+	//}
+	//
+	//return int(dupHandle), nil
+	return 0, nil
 }
 
 func (c *conn) SetReadBuffer(bytes int) error {

@@ -16,13 +16,9 @@ package gnet
 
 import (
 	"context"
-	"errors"
 	"net"
 	"os"
 	"sync"
-	"syscall"
-
-	"golang.org/x/sys/windows"
 
 	errorx "github.com/vuuvv/gnet/v2/pkg/errors"
 	"github.com/vuuvv/gnet/v2/pkg/logging"
@@ -38,49 +34,50 @@ type listener struct {
 }
 
 func (l *listener) dup() (int, error) {
-	if l.ln == nil && l.pc == nil {
-		return -1, errorx.ErrUnsupportedOp
-	}
-
-	var (
-		sc syscall.Conn
-		ok bool
-	)
-	if l.ln != nil {
-		sc, ok = l.ln.(syscall.Conn)
-	} else {
-		sc, ok = l.pc.(syscall.Conn)
-	}
-
-	if !ok {
-		return -1, errors.New("failed to convert net.Conn to syscall.Conn")
-	}
-	rc, err := sc.SyscallConn()
-	if err != nil {
-		return -1, errors.New("failed to get syscall.RawConn from net.Conn")
-	}
-
-	var dupHandle windows.Handle
-	e := rc.Control(func(fd uintptr) {
-		process := windows.CurrentProcess()
-		err = windows.DuplicateHandle(
-			process,
-			windows.Handle(fd),
-			process,
-			&dupHandle,
-			0,
-			true,
-			windows.DUPLICATE_SAME_ACCESS,
-		)
-	})
-	if err != nil {
-		return -1, err
-	}
-	if e != nil {
-		return -1, e
-	}
-
-	return int(dupHandle), nil
+	//if l.ln == nil && l.pc == nil {
+	//	return -1, errorx.ErrUnsupportedOp
+	//}
+	//
+	//var (
+	//	sc syscall.Conn
+	//	ok bool
+	//)
+	//if l.ln != nil {
+	//	sc, ok = l.ln.(syscall.Conn)
+	//} else {
+	//	sc, ok = l.pc.(syscall.Conn)
+	//}
+	//
+	//if !ok {
+	//	return -1, errors.New("failed to convert net.Conn to syscall.Conn")
+	//}
+	//rc, err := sc.SyscallConn()
+	//if err != nil {
+	//	return -1, errors.New("failed to get syscall.RawConn from net.Conn")
+	//}
+	//
+	//var dupHandle windows.Handle
+	//e := rc.Control(func(fd uintptr) {
+	//	process := windows.CurrentProcess()
+	//	err = windows.DuplicateHandle(
+	//		process,
+	//		windows.Handle(fd),
+	//		process,
+	//		&dupHandle,
+	//		0,
+	//		true,
+	//		windows.DUPLICATE_SAME_ACCESS,
+	//	)
+	//})
+	//if err != nil {
+	//	return -1, err
+	//}
+	//if e != nil {
+	//	return -1, e
+	//}
+	//
+	//return int(dupHandle), nil
+	return 0, nil
 }
 
 func (l *listener) close() {
@@ -95,22 +92,22 @@ func (l *listener) close() {
 
 func initListener(network, addr string, options *Options) (l *listener, err error) {
 	lc := net.ListenConfig{
-		Control: func(network, address string, c syscall.RawConn) error {
-			return c.Control(func(fd uintptr) {
-				if network != "unix" && (options.ReuseAddr || options.ReusePort) {
-					_ = windows.SetsockoptInt(windows.Handle(fd), windows.SOL_SOCKET, windows.SO_REUSEADDR, 1)
-				}
-				if options.TCPNoDelay == TCPNoDelay {
-					_ = windows.SetsockoptInt(windows.Handle(fd), windows.IPPROTO_TCP, windows.TCP_NODELAY, 1)
-				}
-				if options.SocketRecvBuffer > 0 {
-					_ = windows.SetsockoptInt(windows.Handle(fd), windows.SOL_SOCKET, windows.SO_RCVBUF, options.SocketRecvBuffer)
-				}
-				if options.SocketSendBuffer > 0 {
-					_ = windows.SetsockoptInt(windows.Handle(fd), windows.SOL_SOCKET, windows.SO_SNDBUF, options.SocketSendBuffer)
-				}
-			})
-		},
+		//Control: func(network, address string, c syscall.RawConn) error {
+		//	return c.Control(func(fd uintptr) {
+		//		if network != "unix" && (options.ReuseAddr || options.ReusePort) {
+		//			_ = windows.SetsockoptInt(windows.Handle(fd), windows.SOL_SOCKET, windows.SO_REUSEADDR, 1)
+		//		}
+		//		if options.TCPNoDelay == TCPNoDelay {
+		//			_ = windows.SetsockoptInt(windows.Handle(fd), windows.IPPROTO_TCP, windows.TCP_NODELAY, 1)
+		//		}
+		//		if options.SocketRecvBuffer > 0 {
+		//			_ = windows.SetsockoptInt(windows.Handle(fd), windows.SOL_SOCKET, windows.SO_RCVBUF, options.SocketRecvBuffer)
+		//		}
+		//		if options.SocketSendBuffer > 0 {
+		//			_ = windows.SetsockoptInt(windows.Handle(fd), windows.SOL_SOCKET, windows.SO_SNDBUF, options.SocketSendBuffer)
+		//		}
+		//	})
+		//},
 		KeepAlive: options.TCPKeepAlive,
 	}
 	l = &listener{network: network, address: addr}
